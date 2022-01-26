@@ -1,4 +1,3 @@
-
 class Point:
 
     def __init__(self, x, y, a, b):
@@ -20,6 +19,13 @@ class Point:
 
     def __ne__(self, other):
         return not (self == other)
+
+    def __repr__(self):
+        if self.x is None:
+            return 'Point (infinity)'
+        else: #isinstance check removed due to circular dep issue
+            return 'Point({}, {})_{}_{} FieldElement({})'.format( \
+                self.x.num, self.y.num, self.a.num, self.b.num, self.x.prime )
 
     def __add__(self, other):
         if self.a != other.a or self.b != other.b:

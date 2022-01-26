@@ -59,6 +59,10 @@ class FieldElement:
         result = self.num * pow(other.num, self.prime - 2, self.prime) % self.prime
         return self.__class__(result, self.prime)
 
+    def __rmul__(self, coefficient):
+        num = (self.num * coefficient) % self.prime
+        return self.__class__(num=num, prime=self.prime)
+
 
 class FieldElementTest(unittest.TestCase):
 
@@ -133,6 +137,36 @@ class EccTest(unittest.TestCase):
             y = FieldElement(y_raw, prime)
             with self.assertRaises(ValueError):
                 Point(x, y, a, b)
+
+
+    def test_add(self):
+        prime = 223
+        a = FieldElement(0, prime)
+        b = FieldElement(7, prime)
+        additions = [[192, 105, 17, 56, 170, 142],
+        [47, 71, 117, 141, 60, 139],
+        [143, 98, 76, 66, 47, 71]]
+        """
+        x1r, y1r, x2r, y2r = 17, 56, 170, 142
+        x1 = FieldElement(x1r, prime)
+        y1 = FieldElement(y1r, prime)
+        p1 = Point(x1, y1, a, b)
+        x2 = FieldElement(x1r, prime)
+        y2 = FieldElement(y1r, prime)
+        p2 = Point(x2, y2, a, b)
+        """
+        for x1r, y1r, x2r, y2r, x3r, y3r in additions:
+            x1 = FieldElement(x1r, prime)
+            y1 = FieldElement(y1r, prime)
+            p1 = Point(x1, y1, a, b)
+            x2 = FieldElement(x2r, prime)
+            y2 = FieldElement(y2r, prime)
+            p2 = Point(x2, y2, a, b)
+            x3 = FieldElement(x3r, prime)
+            y3 = FieldElement(y3r, prime)
+            p3 = Point(x3, y3, a, b)
+            self.assertEqual(p3, p1 + p2)
+
 
 
 if __name__ == '__main__':
