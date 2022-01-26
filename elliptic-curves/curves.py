@@ -57,4 +57,14 @@ class Point:
         if self == other and self.y == 0 * self.x:
             return self.__class__(None, None, self.a, self.b)
 
+    def __rmul__(self, coefficient):
+        coef = coefficient
+        current = self
+        result = self.__class__(None, None, self.a, self.b)
+        while coef:
+            if coef & 1:
+                result += current
+            current += current
+            coef >> 1
+        return result
 
