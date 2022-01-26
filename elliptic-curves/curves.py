@@ -37,7 +37,7 @@ class Point:
             return self
 
         if self.x == other.x and self.y != other.y:
-            return self.__class__(None, None, a, b)
+            return self.__class__(None, None, self.a, self.b)
 
         # x and y both are different. Reflect the point. Derived formulas
         if self.x != other.x:

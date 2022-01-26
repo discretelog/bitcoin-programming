@@ -146,15 +146,6 @@ class EccTest(unittest.TestCase):
         additions = [[192, 105, 17, 56, 170, 142],
         [47, 71, 117, 141, 60, 139],
         [143, 98, 76, 66, 47, 71]]
-        """
-        x1r, y1r, x2r, y2r = 17, 56, 170, 142
-        x1 = FieldElement(x1r, prime)
-        y1 = FieldElement(y1r, prime)
-        p1 = Point(x1, y1, a, b)
-        x2 = FieldElement(x1r, prime)
-        y2 = FieldElement(y1r, prime)
-        p2 = Point(x2, y2, a, b)
-        """
         for x1r, y1r, x2r, y2r, x3r, y3r in additions:
             x1 = FieldElement(x1r, prime)
             y1 = FieldElement(y1r, prime)
@@ -167,6 +158,23 @@ class EccTest(unittest.TestCase):
             p3 = Point(x3, y3, a, b)
             self.assertEqual(p3, p1 + p2)
 
+
+    def test_order(self):
+        prime = 223
+        a = FieldElement(0, prime)
+        b = FieldElement(7, prime)
+        x = FieldElement(15, prime)
+        y = FieldElement(86, prime)
+        p = Point(x, y, a, b)
+        inf = Point(None, None, a, b)
+        product = p
+        count = 1
+        while True:
+            product += p
+            count += 1
+            if product == inf:
+                break
+        self.assertEqual(count, 7)
 
 
 if __name__ == '__main__':
