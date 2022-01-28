@@ -40,6 +40,21 @@ class S256Point(Point):
         total = u * G + v * self
         return total.x.num == sig.r
 
+    # Point encoding
+    # y and -y both satisfy the equation. x, p-y also satisfies the equation
+    # p is odd. if y is even p-y is odd and vice versa.
+    # so encode just nature of y. 1 bit
+    def sec(self, compressed = True):
+        if compressed:
+            if self.y.num % 2 == 0:
+                return b'\0x02' + self.x.num.to_bytes(32, 'big')
+            else:
+                return b'\0x03' + self.x.num.to_bytes(32, 'big')
+        else:
+            return b'\0x04' + self.x.num.to_bytes(32,'big') \
+                   + self.y.num.to_bytes(32, 'big')
+
+
 G = S256Point(
     0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798,
     0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8)
