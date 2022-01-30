@@ -81,6 +81,18 @@ class S256Point(Point):
         else:
             return S256Point(x, odd_beta)
 
+    def hash160(self, compressed=True):
+        return hash160(self.sec(compressed))
+
+    def address(self, compressed=True, testnet=False):
+        '''Returns the address string'''
+        h160 = self.hash160(compressed)
+        if testnet:
+            prefix = b'\x6f'
+        else:
+            prefix = b'\x00'
+        return encode_base58_checksum(prefix + h160)
+
 
 
 G = S256Point(
@@ -136,6 +148,19 @@ class PrivateKey:
                 return candidate  # <2>
             k = hmac.new(k, v + b'\x00', s256).digest()
             v = hmac.new(k, v, s256).digest()
+
+    def wif(self, compressed=True, testnet=False):
+        secret_bytes = self.secret.to_bytes(32, 'big')
+        if testnet:
+            prefix = b'\xef'
+        else:
+            prefix = b'\x80'
+        if compressed:
+            suffix = b'\x01'
+        else:
+            suffix = b''
+        return encode_base58_checksum(prefix + secret_bytes + suffix)
+
 
 class S256Test(unittest.TestCase):
 
