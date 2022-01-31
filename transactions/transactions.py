@@ -1,4 +1,9 @@
-from helper import hash256
+from helper import (
+        hash256,
+        little_endian_to_int,
+        int_to_little_endian,
+        parse_varint,
+    )
 
 class Tx:
 
@@ -28,6 +33,15 @@ class Tx:
                 tx_ins,
                 tx_outs,
                 self.locktime)
+
+    def parse(cls, s, testnet=False):
+        version = little_endian_to_int(s.read(4))
+        num_inputs = parse_varint(s)
+        inputs = []
+        for _ in range(num_inputs):
+            inputs.append(TxIn.parse(s))
+        return cls(version, inputs, None, None, testnet=testnet)
+
 
 class TxIn:
 
