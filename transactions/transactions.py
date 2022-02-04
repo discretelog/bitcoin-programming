@@ -58,6 +58,14 @@ class Tx:
         result += int_to_little_endian(self.locktime, 4)
         return result
 
+    def fee(self, testnet=False):
+        input_sum, output_sum = 0, 0
+        for tx_in in self.tx_ins:
+            input_sum += tx_in.get_amount(testnet=testnet)
+        for tx_out in self.tx_outs:
+            output_sum += tx_out.amount
+        return input_sum - output_sum
+
 
 class TxIn:
 
@@ -81,7 +89,14 @@ class TxIn:
         result += int_to_little_endian(self.prev_index, 4)
         result += self.script_sig.serialize()
         result += int_to_little_endian(self.sequence, 4)
-        return resul
+        return result
+
+    def fetch_tx(self, testnet=False):
+        return TxFetcher.fetch(self.prev_tx.hex(), testnet=testnet)
+
+    def get_amount(self, testnet=False):
+        tx = self.fetch_tx(testnet=testnet)
+        return tx.tx_outs[self.prev_index].amount
 
 
 class TxOut:
@@ -92,6 +107,10 @@ class TxOut:
 
     def __repr__(self):
         return '{} : {}'.format(self.amount, self.script_pubkey)
+
+    def script_pubkey(self, testnet=False):
+        tx = self.fetch_tx(testnet=testnet)
+        return tx.tx_outs[self.prev_index].script_pubkey
 
     @classmethod
     def parse(cls, s):
