@@ -19,6 +19,24 @@ def encode_base58(s):
         result = BASE58_ALPHABET[mod] + result
     return prefix + result
 
+
+def decode_base58(s):
+    num = 0
+    for c in s:
+        num *= 58
+        num += BASE58_ALPHABET.index(c)
+    combined = num.to_bytes(25, byteorder='big')
+    checksum = combined[-4:]
+    if hash256(combined[:-4])[:4] != checksum:
+        raise ValueError('bad address: {} {}'.format(checksum,
+                          hash256(combined[:-4])[:4]))
+    return combined[1:-4]
+
+def p2pkh_script(h160):
+    '''Takes a hash160 and returns the p2pkh ScriptPubKey'''
+    return Script([0x76, 0xa9, h160, 0x88, 0xac])
+
+
 def hash256(s):
     return hashlib.sha256(hashlib.sha256(s).digest.()).digest()
 
